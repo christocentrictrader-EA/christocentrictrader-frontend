@@ -5,7 +5,6 @@ window.onload = function() {
   const dontShowCheckbox = document.getElementById("dontShowAgain");
   const remindBtn = document.getElementById("remindLater");
 
-  // Check localStorage
   const hideForever = localStorage.getItem("hideIndicatorPopup");
   const remindUntil = localStorage.getItem("remindIndicatorPopupUntil");
   const now = new Date();
@@ -13,12 +12,9 @@ window.onload = function() {
   if (!hideForever && (!remindUntil || new Date(remindUntil) < now)) {
     popup.style.display = "block";
     overlay.style.display = "block";
-
-    // Auto-dismiss after 30 seconds
     setTimeout(() => dismissPopup(), 30000);
   }
 
-  // Manual dismiss
   closeBtn.onclick = function() {
     if (dontShowCheckbox.checked) {
       localStorage.setItem("hideIndicatorPopup", "true");
@@ -26,7 +22,6 @@ window.onload = function() {
     dismissPopup();
   };
 
-  // Remind me later (snooze for 1 day)
   remindBtn.onclick = function() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -44,10 +39,4 @@ window.onload = function() {
       overlay.classList.remove("fade-out");
     }, 500);
   }
-};
-
-// Quick test: force popup to show
-window.onload = function() {
-  document.getElementById("indicatorPopup").style.display = "block";
-  document.getElementById("popupOverlay").style.display = "block";
 };
