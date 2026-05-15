@@ -45,3 +45,9 @@ window.onload = function() {
     }, 500);
   }
 };
+
+// Quick test: force popup to show
+window.onload = function() {
+  document.getElementById("indicatorPopup").style.display = "block";
+  document.getElementById("popupOverlay").style.display = "block";
+};
