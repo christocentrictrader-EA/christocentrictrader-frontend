@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChristocentricTrader — Driverline Gold Compass EA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --navy:   #0a1220;
+    --deep:   #0d1a30;
+    --panel:  #0f2040;
+    --card:   #112244;
+    --gold:   #f0c040;
+    --gold2:  #c8a020;
+    --teal:   #20c8a0;
+    --bull:   #00c878;
+    --bear:   #e03c3c;
+    --neutral:#9090b0;
+    --white:  #e8eaf0;
+    --mono:   'Share Tech Mono', monospace;
+    --title:  'Cinzel', serif;
+    --body:   'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--body);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(240,192,64,0.06) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #060e1e 0%, #0f1f3a 60%, #0a1a2e 100%);
+    border-bottom: 2px solid var(--gold);
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 150% at 50% 50%, rgba(240,192,64,0.08) 0%, transparent 70%);
+  }
+  .logo-ring {
+    width: 64px; height: 64px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle, rgba(240,192,64,0.15) 0%, transparent 70%);
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(240,192,64,0.3);
+  }
+  .logo-inner {
+    font-family: var(--title);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: -1px;
+  }
+  .header-text h1 {
+    font-family: var(--title);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .header-text h2 {
+    font-family: var(--title);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--teal);
+    letter-spacing: 4px;
+    margin-top: 3px;
+  }
+  .header-text .slogan {
+    font-size: 11px;
+    color: var(--neutral);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+  .version-badge {
+    margin-left: auto;
+    background: rgba(240,192,64,0.1);
+    border: 1px solid var(--gold2);
+    border-radius: 4px;
+    padding: 8px 16px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .version-badge .ver { font-family: var(--mono); font-size: 16px; color: var(--gold); }
+  .version-badge .date { font-size: 10px; color: var(--neutral); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+  .section { margin-bottom: 28px; }
+
+  /* ── SECTION TITLE ── */
+  .sec-title {
+    font-family: var(--title);
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    border-left: 3px solid var(--gold);
+    padding-left: 10px;
+    margin-bottom: 14px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(240,192,64,0.15);
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold2), transparent);
+  }
+  .card-title {
+    font-family: var(--title);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ── SIGNAL FLOW ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .flow-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 5px;
+    border-left: 3px solid transparent;
+  }
+  .flow-item.bull  { border-color: var(--bull); }
+  .flow-item.bear  { border-color: var(--bear); }
+  .flow-item.gold  { border-color: var(--gold); }
+  .flow-item.teal  { border-color: var(--teal); }
+  .flow-item.neut  { border-color: var(--neutral); }
+
+  .fi-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .fi-num.bull { background: rgba(0,200,120,0.2); color: var(--bull); }
+  .fi-num.bear { background: rgba(220,60,60,0.2); color: var(--bear); }
+  .fi-num.gold { background: rgba(240,192,64,0.2); color: var(--gold); }
+  .fi-num.teal { background: rgba(32,200,160,0.2); color: var(--teal); }
+  .fi-num.neut { background: rgba(144,144,176,0.2); color: var(--neutral); }
+
+  .fi-content { flex: 1; }
+  .fi-label { font-weight: 600; font-size: 12px; }
+  .fi-desc  { font-size: 11px; color: var(--neutral); margin-top: 1px; }
+  .fi-pts   { font-family: var(--mono); font-size: 11px; margin-left: auto; padding-left: 10px; }
+  .fi-pts.bull { color: var(--bull); }
+  .fi-pts.gold { color: var(--gold); }
+
+  /* ── SCORE TABLE ── */
+  .score-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .score-bar-row:last-child { border-bottom: none; }
+  .sb-label { width: 120px; font-size: 11px; color: var(--white); }
+  .sb-bar   { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+  .sb-fill  { height: 100%; border-radius: 4px; }
+  .sb-pts   { width: 40px; text-align: right; font-family: var(--mono); font-size: 11px; }
+
+  /* ── DASHBOARD MOCKUP ── */
+  .dashboard-mock {
+    background: #0c1223;
+    border: 1px solid rgba(240,192,64,0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .dm-title {
+    background: #0f1a38;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--gold2);
+    color: var(--gold);
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .dm-header {
+    background: #121e40;
+    display: grid;
+    grid-template-columns: 90px 60px 60px 60px 110px 60px 55px 60px 55px;
+    padding: 5px 12px;
+    border-bottom: 1px solid rgba(240,192,64,0.3);
+  }
+  .dm-col { color: var(--gold); font-size: 10px; letter-spacing: 1px; }
+  .dm-row {
+    display: grid;
+    grid-template-columns: 90px 60px 60px 60px 110px 60px 55px 60px 55px;
+    padding: 4px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    align-items: center;
+  }
+  .dm-row:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .dm-cell { font-size: 10px; }
+  .c-bull { color: #00c878; }
+  .c-bear { color: #e03c3c; }
+  .c-neut { color: #9090b0; }
+  .c-gold { color: #f0c040; }
+  .c-teal { color: #20c8a0; }
+  .c-white{ color: #d0d8e8; }
+  .dm-foot {
+    background: #080e1e;
+    padding: 5px 12px;
+    border-top: 1px solid rgba(240,192,64,0.15);
+    color: var(--neutral);
+    font-size: 9px;
+  }
+
+  /* ── MODE CARDS ── */
+  .mode-card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: border-color 0.2s;
+  }
+  .mode-card:hover { border-color: rgba(240,192,64,0.3); }
+  .mode-icon { font-size: 24px; margin-bottom: 8px; }
+  .mode-name { font-family: var(--title); font-size: 12px; color: var(--gold); letter-spacing: 2px; margin-bottom: 6px; }
+  .mode-desc { font-size: 11px; color: var(--neutral); line-height: 1.5; }
+  .mode-tag  { display: inline-block; margin-top: 8px; background: rgba(240,192,64,0.1); border: 1px solid var(--gold2); border-radius: 3px; padding: 2px 8px; font-size: 10px; color: var(--gold); font-family: var(--mono); }
+
+  /* ── EXEC MODES ── */
+  .exec-block {
+    padding: 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .exec-title { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .exec-desc  { font-size: 11px; color: var(--neutral); line-height: 1.5; }
+  .exec-cond  { margin-top: 8px; font-family: var(--mono); font-size: 10px; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 4px; color: var(--teal); }
+
+  /* ── TIER TABLE ── */
+  .tier-table { width: 100%; border-collapse: collapse; }
+  .tier-table th {
+    background: rgba(240,192,64,0.1);
+    color: var(--gold);
+    font-family: var(--title);
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(240,192,64,0.3);
+  }
+  .tier-table td {
+    padding: 7px 12px;
+    font-size: 11px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .tier-table tr:hover td { background: rgba(240,192,64,0.04); }
+  .t1 { color: var(--neutral); }
+  .t2 { color: var(--teal); }
+  .t3 { color: var(--gold); }
+  .check { color: var(--bull); }
+  .cross { color: var(--bear); }
+
+  /* ── RISK TABLE ── */
+  .param-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 11px;
+  }
+  .param-row:last-child { border-bottom: none; }
+  .param-name { color: var(--neutral); }
+  .param-val  { font-family: var(--mono); color: var(--gold); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 28px;
+    border-top: 1px solid rgba(240,192,64,0.15);
+    margin-top: 20px;
+  }
+  .footer .brand { font-family: var(--title); font-size: 14px; color: var(--gold); letter-spacing: 3px; }
+  .footer .sub   { font-size: 11px; color: var(--neutral); margin-top: 4px; }
+  .footer .links { margin-top: 10px; font-size: 11px; color: var(--teal); }
+
+  /* ── TAG PILLS ── */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-family: var(--mono); margin: 2px; }
+  .tag-bull { background: rgba(0,200,120,0.15); color: var(--bull); border: 1px solid rgba(0,200,120,0.3); }
+  .tag-gold { background: rgba(240,192,64,0.15); color: var(--gold); border: 1px solid rgba(240,192,64,0.3); }
+  .tag-teal { background: rgba(32,200,160,0.15); color: var(--teal); border: 1px solid rgba(32,200,160,0.3); }
+  .tag-bear { background: rgba(220,60,60,0.15);  color: var(--bear); border: 1px solid rgba(220,60,60,0.3); }
+
+  code { font-family: var(--mono); background: rgba(0,0,0,0.4); padding: 1px 5px; border-radius: 3px; color: var(--teal); font-size: 11px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-ring"><div class="logo-inner">CCT</div></div>
+  <div class="header-text">
+    <h1>ChristocentricTrader</h1>
+    <h2>Driverline Gold Compass EA</h2>
+    <div class="slogan">Faith Drives &nbsp;|&nbsp; AI Empowers &nbsp;|&nbsp; Excellence Delivers</div>
+  </div>
+  <div class="version-badge">
+    <div class="ver">v1.0.0</div>
+    <div class="date">MQL5 / MetaTrader 5</div>
+    <div class="date" style="margin-top:4px">CCT © 2025</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ── TRADING MODES ── -->
+  <div class="section">
+    <div class="sec-title">Trading Modes</div>
+    <div class="grid-3">
+      <div class="mode-card">
+        <div class="mode-icon">📈</div>
+        <div class="mode-name">CLASSIC</div>
+        <div class="mode-desc">Pure EMA Driverline crossover with ATR Band and RSI/CCI confirmation. Ideal for trend-following in clean market conditions.</div>
+        <div class="mode-tag">TREND FOLLOW</div>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">🧠</div>
+        <div class="mode-name">SMC</div>
+        <div class="mode-desc">Adds Smart Money Concepts: BOS/CHoCH detection, Order Block entries, Fair Value Gaps, and Liquidity Sweep reversals on top of the DGC signal.</div>
+        <div class="mode-tag">SMART MONEY</div>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">⚡</div>
+        <div class="mode-name">ADVANCED</div>
+        <div class="mode-desc">Full Driverline Gold Compass: all DGC layers + SMC + MTF confluence + Volume filter + Score-based routing with Limit and Market execution combined.</div>
+        <div class="mode-tag">FULL SYSTEM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SIGNAL SCORING ── -->
+  <div class="section">
+    <div class="sec-title">Signal Scoring System (0–10)</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Score Components</div>
+        <div class="flow">
+          <div class="flow-item gold">
+            <div class="fi-num gold">1</div>
+            <div class="fi-content">
+              <div class="fi-label">Driverline Direction</div>
+              <div class="fi-desc">Fast EMA vs Slow EMA — core trend bias</div>
+            </div>
+            <div class="fi-pts gold">+1 pt</div>
+          </div>
+          <div class="flow-item teal">
+            <div class="fi-num teal">2</div>
+            <div class="fi-content">
+              <div class="fi-label">EMA Crossover</div>
+              <div class="fi-desc">Fast crosses Slow — momentum trigger</div>
+            </div>
+            <div class="fi-pts gold">+1 pt</div>
+          </div>
+          <div class="flow-item teal">
+            <div class="fi-num teal">3</div>
+            <div class="fi-content">
+              <div class="fi-label">Signal Line Cross</div>
+              <div class="fi-desc">Fast vs Signal EMA — entry timing</div>
+            </div>
+            <div class="fi-pts gold">+1 pt</div>
+          </div>
+          <div class="flow-item gold">
+            <div class="fi-num gold">4</div>
+            <div class="fi-content">
+              <div class="fi-label">ATR Compass Band</div>
+              <div class="fi-desc">Price breakout above/below ATR band</div>
+            </div>
+            <div class="fi-pts gold">+1 pt</div>
+          </div>
+          <div class="flow-item bull">
+            <div class="fi-num bull">5</div>
+            <div class="fi-content">
+              <div class="fi-label">RSI Filter</div>
+              <div class="fi-desc">RSI > 50 (bull) or &lt; 50 (bear), within bounds</div>
+            </div>
+            <div class="fi-pts gold">+1 pt</div>
+          </div>
+          <div class="flow-item bull">
+            <div class="fi-num bull">6</div>
+            <div class="fi-content">
+              <div class="fi-label">CCI Filter</div>
+              <div class="fi-desc">CCI confirms momentum direction</div>
+            </div>
+            <div class="fi-pts gold">+1 pt</div>
+          </div>
+          <div class="flow-item teal">
+            <div class="fi-num teal">7</div>
+            <div class="fi-content">
+              <div class="fi-label">MTF Confluence</div>
+              <div class="fi-desc">Higher TF EMA alignment (H4 default)</div>
+            </div>
+            <div class="fi-pts gold">+2 pts</div>
+          </div>
+          <div class="flow-item gold">
+            <div class="fi-num gold">8</div>
+            <div class="fi-content">
+              <div class="fi-label">SMC Structures</div>
+              <div class="fi-desc">OB +2 pts | FVG +1 pt | BOS +1 pt | Sweep +1 pt</div>
+            </div>
+            <div class="fi-pts gold">+1-2 pts</div>
+          </div>
+          <div class="flow-item neut">
+            <div class="fi-num neut">9</div>
+            <div class="fi-content">
+              <div class="fi-label">Volume Filter</div>
+              <div class="fi-desc">Volume &gt; 1.2× 5-bar average confirms entry</div>
+            </div>
+            <div class="fi-pts gold">+1 pt</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Score → Action Routing</div>
+        <div style="margin-bottom:16px">
+          <div class="score-bar-row">
+            <div class="sb-label">0–4 &nbsp;<span style="color:var(--bear)">NO TRADE</span></div>
+            <div class="sb-bar"><div class="sb-fill" style="width:40%;background:var(--bear)"></div></div>
+            <div class="sb-pts" style="color:var(--neutral)">WAIT</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="sb-label">5–5 &nbsp;<span style="color:var(--gold)">LIMIT ONLY</span></div>
+            <div class="sb-bar"><div class="sb-fill" style="width:50%;background:var(--gold)"></div></div>
+            <div class="sb-pts" style="color:var(--gold)">LMT</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="sb-label">6–7 &nbsp;<span style="color:var(--teal)">MARKET EXEC</span></div>
+            <div class="sb-bar"><div class="sb-fill" style="width:70%;background:var(--teal)"></div></div>
+            <div class="sb-pts" style="color:var(--teal)">MKT</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="sb-label">8–9 &nbsp;<span style="color:var(--bull)">MKT + LIMIT</span></div>
+            <div class="sb-bar"><div class="sb-fill" style="width:90%;background:var(--bull)"></div></div>
+            <div class="sb-pts" style="color:var(--bull)">BOTH</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="sb-label">10 &nbsp;&nbsp;&nbsp;<span style="color:var(--gold)">ELITE SIGNAL</span></div>
+            <div class="sb-bar"><div class="sb-fill" style="width:100%;background:linear-gradient(90deg,var(--bull),var(--gold))"></div></div>
+            <div class="sb-pts" style="color:var(--gold)">MAX</div>
+          </div>
+        </div>
+
+        <div class="card-title" style="margin-top:16px">SMC Tag Mapping</div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom: 14px;">
+          <span class="tag tag-bull">BOS+ (breakout)</span>
+          <span class="tag tag-bear">BOS- (breakdown)</span>
+          <span class="tag tag-teal">OB+ (bull OB)</span>
+          <span class="tag tag-bear">OB- (bear OB)</span>
+          <span class="tag tag-teal">FVG+ (bull gap)</span>
+          <span class="tag tag-bear">FVG- (bear gap)</span>
+          <span class="tag tag-bull">SWP+ (sweep low)</span>
+          <span class="tag tag-bear">SWP- (sweep high)</span>
+          <span class="tag tag-gold">MTF+ (HTF bull)</span>
+          <span class="tag tag-bear">MTF- (HTF bear)</span>
+        </div>
+
+        <div class="card-title">Score Detail Examples</div>
+        <div style="font-family:var(--mono); font-size:10px; color:var(--teal); background:rgba(0,0,0,0.3); padding:10px; border-radius:5px; line-height:2">
+          DL+ CX+ SC+ BU+ RI+ CC+ MTF+ OB+ V+ &nbsp;&rarr; Score: 10/10<br>
+          DL+ CX+ MTF+ FVG+ RI+ &nbsp;&rarr; Score: 7/10<br>
+          DL- SC- MTF- BOS- SWP- &nbsp;&rarr; Score: 6/10 SELL<br>
+          DL+ RI+ &nbsp;&rarr; Score: 2/10 (no trade)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD MOCKUP ── -->
+  <div class="section">
+    <div class="sec-title">Live Dashboard — Advanced Tiered Panel</div>
+    <div class="dashboard-mock">
+      <div class="dm-title">
+        CHRISTOCENTRICTRADER &nbsp;|&nbsp; DRIVERLINE GOLD COMPASS EA &nbsp;|&nbsp; Faith Drives | AI Empowers | Excellence Delivers
+      </div>
+      <div class="dm-title" style="background:#080e22; color:#9090b0; font-size:9px; border-bottom: 1px solid rgba(255,255,255,0.06)">
+        &nbsp;&nbsp;TIER: 2 — SNIPER &nbsp;|&nbsp; MODE: ADVANCED &nbsp;|&nbsp; EXEC: COMBINED &nbsp;|&nbsp; LICENSE: ACTIVE
+      </div>
+      <div class="dm-header">
+        <div class="dm-col">SYMBOL</div>
+        <div class="dm-col">TREND</div>
+        <div class="dm-col">SIGNAL</div>
+        <div class="dm-col">SCORE</div>
+        <div class="dm-col">STRENGTH</div>
+        <div class="dm-col">ATR</div>
+        <div class="dm-col">TRADES</div>
+        <div class="dm-col">SMC</div>
+        <div class="dm-col">STATUS</div>
+      </div>
+      <!-- Rows -->
+      <div class="dm-row">
+        <div class="dm-cell c-white">XAUUSD</div>
+        <div class="dm-cell c-bull">BULL</div>
+        <div class="dm-cell c-bull">BUY</div>
+        <div class="dm-cell c-bull">9/10</div>
+        <div class="dm-cell c-bull">|||||||||.</div>
+        <div class="dm-cell c-neut">12.4p</div>
+        <div class="dm-cell c-gold">1</div>
+        <div class="dm-cell c-teal">OB FVG</div>
+        <div class="dm-cell c-gold">LIVE</div>
+      </div>
+      <div class="dm-row">
+        <div class="dm-cell c-white">EURUSD</div>
+        <div class="dm-cell c-bull">BULL</div>
+        <div class="dm-cell c-bull">BUY</div>
+        <div class="dm-cell c-gold">7/10</div>
+        <div class="dm-cell c-gold">|||||||...</div>
+        <div class="dm-cell c-neut">8.2p</div>
+        <div class="dm-cell c-neut">—</div>
+        <div class="dm-cell c-teal">BOS MTF</div>
+        <div class="dm-cell c-bull">READY</div>
+      </div>
+      <div class="dm-row">
+        <div class="dm-cell c-white">GBPUSD</div>
+        <div class="dm-cell c-bear">BEAR</div>
+        <div class="dm-cell c-bear">SELL</div>
+        <div class="dm-cell c-bull">8/10</div>
+        <div class="dm-cell c-bull">||||||||..</div>
+        <div class="dm-cell c-neut">9.8p</div>
+        <div class="dm-cell c-gold">1</div>
+        <div class="dm-cell c-teal">OB SWP</div>
+        <div class="dm-cell c-gold">LIVE</div>
+      </div>
+      <div class="dm-row">
+        <div class="dm-cell c-white">USDJPY</div>
+        <div class="dm-cell c-neut">NEUT</div>
+        <div class="dm-cell c-neut">WAIT</div>
+        <div class="dm-cell c-neut">3/10</div>
+        <div class="dm-cell c-neut">|||.......</div>
+        <div class="dm-cell c-neut">6.1p</div>
+        <div class="dm-cell c-neut">—</div>
+        <div class="dm-cell c-neut">—</div>
+        <div class="dm-cell c-neut">SCAN</div>
+      </div>
+      <div class="dm-row">
+        <div class="dm-cell c-white">USDCHF</div>
+        <div class="dm-cell c-bear">BEAR</div>
+        <div class="dm-cell c-bear">SELL</div>
+        <div class="dm-cell c-gold">6/10</div>
+        <div class="dm-cell c-gold">||||||....</div>
+        <div class="dm-cell c-neut">7.4p</div>
+        <div class="dm-cell c-neut">—</div>
+        <div class="dm-cell c-teal">FVG BOS</div>
+        <div class="dm-cell c-bull">READY</div>
+      </div>
+      <div class="dm-row">
+        <div class="dm-cell c-white">AUDUSD</div>
+        <div class="dm-cell c-bull">BULL</div>
+        <div class="dm-cell c-bull">BUY</div>
+        <div class="dm-cell c-gold">5/10</div>
+        <div class="dm-cell c-gold">|||||.....</div>
+        <div class="dm-cell c-neut">5.9p</div>
+        <div class="dm-cell c-neut">—</div>
+        <div class="dm-cell c-neut">—</div>
+        <div class="dm-cell c-teal">READY</div>
+      </div>
+      <div class="dm-foot">
+        Symbols: 6 &nbsp;|&nbsp; Open Trades: 2 / 3 &nbsp;|&nbsp; Balance: 10,000.00 &nbsp;|&nbsp; Equity: 10,245.30 &nbsp;|&nbsp; DD: 0.0% &nbsp;|&nbsp; 2025.01.15 14:32:08
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EXECUTION MODES ── -->
+  <div class="section">
+    <div class="sec-title">Execution Modes</div>
+    <div class="grid-3">
+      <div class="exec-block">
+        <div class="exec-title" style="color:var(--teal)">⚡ Market Execution</div>
+        <div class="exec-desc">Instant fill at current bid/ask. Used when score meets or exceeds the Market threshold. Slippage-tolerant with configurable deviation.</div>
+        <div class="exec-cond">Score ≥ ScoreThreshold (default 6)<br>→ BUY/SELL at market</div>
+      </div>
+      <div class="exec-block">
+        <div class="exec-title" style="color:var(--gold)">🎯 Limit Orders</div>
+        <div class="exec-desc">Pending order placed at ATR-offset below/above price, optionally at OB or FVG zone. Includes expiry tracking in bars — auto-cancelled if unfilled.</div>
+        <div class="exec-cond">Score ≥ ScoreLimitMin (default 5)<br>AND isOB or isFVG<br>→ BUY/SELL LIMIT placed</div>
+      </div>
+      <div class="exec-block">
+        <div class="exec-title" style="color:var(--bull)">🔱 Combined Mode</div>
+        <div class="exec-desc">Recommended. Markets high-score signals immediately; places limits at SMC zones simultaneously for scaled-in exposure at better prices.</div>
+        <div class="exec-cond">Score ≥ 6 → Market<br>Score ≥ 5 + OB/FVG → Limit<br>Both can be active</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TIER TABLE + RISK ── -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">License Tier Comparison</div>
+      <table class="tier-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="t1">TIER 1 — SCOUT</th>
+            <th class="t2">TIER 2 — SNIPER</th>
+            <th class="t3">TIER 3 — COMMANDER</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Max Symbols</td><td class="t1">3</td><td class="t2">10</td><td class="t3">50</td></tr>
+          <tr><td>Classic Mode</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>SMC Mode</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>Advanced Mode</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>MTF Confluence</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>Limit Orders</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>Telegram Alerts</td><td class="cross">✗</td><td class="cross">✗</td><td class="check">✓</td></tr>
+          <tr><td>Max Open Trades</td><td class="t1">1</td><td class="t2">3</td><td class="t3">Unlimited</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Risk Management Architecture</div>
+      <div class="param-row"><span class="param-name">Lot Sizing</span><span class="param-val">% Risk × Balance / SL×TickVal</span></div>
+      <div class="param-row"><span class="param-name">SL Modes</span><span class="param-val">ATR × mult | Swing H/L | Fixed pips</span></div>
+      <div class="param-row"><span class="param-name">TP Modes</span><span class="param-val">RR Ratio | ATR × mult | Fixed pips</span></div>
+      <div class="param-row"><span class="param-name">Trailing Stop</span><span class="param-val">ATR-based, per-tick update</span></div>
+      <div class="param-row"><span class="param-name">Break-Even</span><span class="param-val">Triggered at RR × 1.0 (configurable)</span></div>
+      <div class="param-row"><span class="param-name">Max Trades</span><span class="param-val">Global cap + per-symbol cap (1)</span></div>
+      <div class="param-row"><span class="param-name">Margin Check</span><span class="param-val">90% free margin guard before order</span></div>
+      <div class="param-row"><span class="param-name">Limit Expiry</span><span class="param-val">N bars × TF period (auto-cancel)</span></div>
+
+      <div class="card-title" style="margin-top:16px">DGC Parameters</div>
+      <div class="param-row"><span class="param-name">Fast EMA</span><span class="param-val">8 (default)</span></div>
+      <div class="param-row"><span class="param-name">Slow EMA</span><span class="param-val">21 (default)</span></div>
+      <div class="param-row"><span class="param-name">Signal EMA</span><span class="param-val">5 (default)</span></div>
+      <div class="param-row"><span class="param-name">ATR Band Mult</span><span class="param-val">1.5× ATR(14)</span></div>
+      <div class="param-row"><span class="param-name">RSI Bounds</span><span class="param-val">30 OS / 70 OB</span></div>
+      <div class="param-row"><span class="param-name">HTF</span><span class="param-val">H4 (configurable)</span></div>
+      <div class="param-row"><span class="param-name">LTF Entry</span><span class="param-val">M15 (configurable)</span></div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="footer">
+    <div class="brand">CHRISTOCENTRICTRADER</div>
+    <div class="sub">Driverline Gold Compass EA &nbsp;·&nbsp; MQL5 Expert Advisor &nbsp;·&nbsp; MetaTrader 5</div>
+    <div class="links">christocentrictrader.d9thprofithub.com.ng &nbsp;|&nbsp; Telegram: @ChristocentricTrader</div>
+    <div style="margin-top:10px; font-size:10px; color:rgba(144,144,176,0.5)">
+      Faith Drives &nbsp;·&nbsp; AI Empowers &nbsp;·&nbsp; Excellence Delivers &nbsp;·&nbsp; CCT © 2025
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
